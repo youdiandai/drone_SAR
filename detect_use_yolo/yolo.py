@@ -6,7 +6,7 @@ import time
 
 rtmp_url = "rtmp://124.223.78.234:1935/live/livestream"
 
-model = YOLO("runs/detect/train/weights/best.pt")  # 只加载一次模型
+model = YOLO("runs/detect/train/weights/best.pt")
 app = Flask(__name__)
 
 def generate_frames():
