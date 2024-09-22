@@ -1,0 +1,11 @@
+version: '3'
+services:
+  srs:
+    image: ossrs/srs:latest
+    ports:
+      - "1935:1935"
+      - "1985:1985"
+      - "8080:8080"
+    # volumes:
+    #   - /path/to/srs.conf:/usr/local/srs/conf/srs.conf
+    restart: always
