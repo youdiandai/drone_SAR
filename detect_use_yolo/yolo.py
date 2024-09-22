@@ -6,41 +6,32 @@ import time
 
 rtmp_url = "rtmp://124.223.78.234:1935/live/livestream"
 
-model = YOLO("yolov8n.pt")
-model = YOLO("runs/detect/train/weights/best.pt")
-
+model = YOLO("runs/detect/train/weights/best.pt")  # 只加载一次模型
 app = Flask(__name__)
 
-cap = cv2.VideoCapture(rtmp_url)
-
-def cleanup():
-    if cap.isOpened():
-        cap.release()
-
-atexit.register(cleanup)
-
 def generate_frames():
+    cap = cv2.VideoCapture(rtmp_url)
+    if not cap.isOpened():
+        print("Unable to open video stream.")
+        return
+
     while True:
-        try:
-            if not cap.isOpened():
-                cap.open(rtmp_url)
+        success, frame = cap.read()
+        if not success:
+            print("Failed to read frame, retrying...")
+            time.sleep(1)  # 等待后重试
+            continue
 
-            success, frame = cap.read()
-            if not success:
-                print("Failed to read frame, retrying...")
-                continue
+        results = model.track(frame, persist=True)
+        annotated_frame = results[0].plot()
 
-            results = model.track(frame, persist=True)
-            annotated_frame = results[0].plot()
+        _, buffer = cv2.imencode('.jpg', annotated_frame)
+        frame = buffer.tobytes()
 
-            _, buffer = cv2.imencode('.jpg', annotated_frame)
-            frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-        except Exception as e:
-            print(f"Error: {e}")
-            time.sleep(1)
+    cap.release()  # 确保释放资源
 
 @app.route('/video_feed')
 def video_feed():
