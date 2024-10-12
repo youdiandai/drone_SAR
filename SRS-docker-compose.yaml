@@ -9,3 +9,21 @@ services:
     # volumes:
     #   - /path/to/srs.conf:/usr/local/srs/conf/srs.conf
     restart: always
+
+  mqtt:
+    build:
+        context: .
+        dockerfile: mqttDockerfile 
+    container_name: mqtt
+    volumes:
+      # - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./config:/mosquitto/config
+      - ./data:/mosquitto/data
+      - ./log:/mosquitto/log
+    environment:
+      - MQTT_USER=admin
+      - MQTT_PASSWORD=admin123
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    restart: always
