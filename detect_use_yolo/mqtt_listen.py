@@ -27,6 +27,7 @@ if __name__ == "__main__":
         device_sn = sys.argv[1]
     else:
         device_sn = "7CTDM3800B883B"  # 如果没有提供参数，使用默认值
-
+#M3TD 1581F6Q8D243N00CPVGL
+#DOCK2 7CTDM3800B883B
     # 调用函数并传递设备序列号
     subscribe_to_topic(device_sn)
