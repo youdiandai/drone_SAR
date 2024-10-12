@@ -11,8 +11,11 @@ MQTT_USERNAME = "admin"
 MQTT_PASSWORD = "admin123"
 
 # MQTT消息回调函数
+# def on_message(client, userdata, message):
+#     print(f"Received message '{str(message.payload)}' on topic '{message.topic}' with QoS {message.qos}")
+
 def on_message(client, userdata, message):
-    print(f"Received message '{str(message.payload)}' on topic '{message.topic}' with QoS {message.qos}")
+    print(f"{message.payload}")
 
 # 创建MQTT客户端实例
 client = mqtt.Client(protocol=mqtt.MQTTv5)  # 使用 MQTT v5 协议
