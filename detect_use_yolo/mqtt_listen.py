@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import json
+import sys
 
 def on_message(client, userdata, message):
     try:
@@ -21,5 +22,11 @@ def subscribe_to_topic(device_sn):
 
 
 if __name__ == "__main__":
+    # 从命令行获取 device_sn 参数
+    if len(sys.argv) > 1:
+        device_sn = sys.argv[1]
+    else:
+        device_sn = "7CTDM3800B883B"  # 如果没有提供参数，使用默认值
+
     # 调用函数并传递设备序列号
-    subscribe_to_topic("7CTDM3800B883B")
+    subscribe_to_topic(device_sn)
