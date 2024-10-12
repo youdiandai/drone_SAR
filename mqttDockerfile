@@ -1,0 +1,9 @@
+FROM eclipse-mosquitto
+
+# 添加脚本到容器
+COPY set_mosquitto_password.sh ./set_mosquitto_password.sh
+# 给脚本执行权限
+RUN chmod +x /set_mosquitto_password.sh
+
+# 使用自定义脚本作为入口点
+ENTRYPOINT ["/set_mosquitto_password.sh"]
