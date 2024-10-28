@@ -7,7 +7,11 @@ from collections import deque
 
 rtmp_url = "rtmp://124.223.78.234:1935/live/livestream"
 
-model = YOLO("runs/detect/train/weights/best.pt")
+# model = YOLO("runs/detect/train/weights/best.pt")
+# use wjy weights
+model = YOLO("wjy_weights/yolov8_voc.pt")
+
+
 app = Flask(__name__)
 
 frame_queue = deque(maxlen=200)  # 增加队列大小以容纳更多帧
