@@ -77,10 +77,12 @@ def flight_hub_livestream_5_min():
     """
     start_message  = start_rtmp_stream("1581F6Q8D243N00CPVGL","81-0-0","cxtest")
     start_msg = json.loads(start_message)
+    print(start_msg)
     time.sleep(60*5)
     if start_msg['message']=='OK':
         print(stop_rtmp_stream(start_msg['data']['data']['converter_id']))
         print(f"{start_msg['data']['data']['converter_id']} stoped")
 
 if __name__ == '__main__':
-    print(json.loads(get_device_by_project_id("aad2f7cd-db27-4226-b2d7-8b4b36422df5")))
+    # print(json.loads(get_device_by_project_id("aad2f7cd-db27-4226-b2d7-8b4b36422df5")))
+    flight_hub_livestream_5_min()

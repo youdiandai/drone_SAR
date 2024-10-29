@@ -1,0 +1,8 @@
+ORGANIZATION_KEY = "a8e241f4446ba3291b070b497337e33713b5abb97cc583ac92d5de24406764bc"
+DJI_URL = "https://es-flight-api-cn.djigate.com"
+RTMQ_SERVER = "rtmp://124.223.78.234:1935/live/livestream"
+
+MQTT_SERVER = "124.223.78.234"
+MQTT_USERNAME = "admin"
+MQTT_PASSWORD = "admin123"
+MQTT_PORT = 1883
