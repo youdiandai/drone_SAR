@@ -41,70 +41,77 @@
     </div>
     <div id="map-container"></div>
     <div id="mqtt-message-container">
-        <h3>最新经纬度数据:</h3>
-        <p>纬度: <span id="latitude">Waiting for data...</span></p>
-        <p>经度: <span id="longitude">Waiting for data...</span></p>
+        <h3>最新位置信息:</h3>
+        <p>时间戳: <span id="timestamp">Waiting for data...</span></p>
+        <p>位置: <span id="location">Waiting for data...</span></p>
     </div>
 
     <script>
-        let map, marker;
+        let map, marker, geocoder;
         let isFirstUpdate = true;
 
         function fetchLatestMqttMessage() {
             fetch('/latest-mqtt-message')
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error('Failed to fetch MQTT data');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log("Received MQTT data:", data);
-                    document.getElementById('latitude').textContent = data.latitude;
-                    document.getElementById('longitude').textContent = data.longitude;
-                    
-                    // 更新地图标记位置
+                    document.getElementById('timestamp').textContent = data.timestamp;
                     updateMarkerPosition(data.latitude, data.longitude);
+                    getGeolocation(data.latitude, data.longitude);
                 })
-                .catch(error => {
-                    console.error('Error fetching MQTT message:', error);
-                });
+                .catch(error => console.error('Error fetching MQTT message:', error));
+        }
+
+        function getGeolocation(lat, lng) {
+            const lnglat = [lng, lat];
+            geocoder.getAddress(lnglat, function(status, result) {
+                if (status === 'complete' && result.info === 'OK') {
+                    const location = result.regeocode.formattedAddress;
+                    document.getElementById('location').textContent = location;
+                } else {
+                    document.getElementById('location').textContent = "无法获取位置";
+                }
+            });
         }
 
         function updateMarkerPosition(lat, lng) {
             const position = [lng, lat];
             if (isFirstUpdate) {
-                // 初次加载时添加标记并设置地图中心
                 marker = new AMap.Marker({ position });
                 map.add(marker);
                 map.setCenter(position);
                 isFirstUpdate = false;
             } else {
-                // 更新标记位置并移动中心
                 marker.setPosition(position);
                 map.setCenter(position);
             }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            fetchLatestMqttMessage(); // 初次加载
-            setInterval(fetchLatestMqttMessage, 2500); // 每隔5秒更新
-
             AMapLoader.load({
                 key: "f84c61f98fafbb36036ae50061382f8f",
                 version: "2.0",
-                plugins: ["AMap.ToolBar"]
+                plugins: ["AMap.ToolBar", "AMap.Geocoder"]
             })
             .then((AMap) => {
                 map = new AMap.Map("map-container", {
-                    zoom: 10,
-                    center: [116.397428, 39.90923] // 初始中心
+                    zoom: 25,
+                    center: [116.397428, 39.90923]
                 });
                 map.addControl(new AMap.ToolBar());
+
+                geocoder = new AMap.Geocoder({
+                    city: "010"
+                });
+
+                fetchLatestMqttMessage();
+                setInterval(fetchLatestMqttMessage, 2500);
             })
-            .catch(e => {
-                console.error('Error loading AMap:', e);
-            });
+            .catch(e => console.error('Error loading AMap:', e));
         });
     </script>
 
