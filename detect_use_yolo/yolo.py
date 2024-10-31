@@ -1,5 +1,6 @@
 import cv2
 from ultralytics import YOLO
+from ultralytics.engine.results import Results
 from flask import Flask, Response, render_template, jsonify
 import time
 import threading
@@ -94,6 +95,18 @@ def calculate_video_frame_timestamp(video_start_timestamp, frame_timestamp):
     # 格式化输出，保留毫秒
     return beijing_time.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
+def filter_class(r:Results):
+    """过滤其他类别只留下person
+
+    Args:
+        r (Results): yolo的检测结果
+
+    Returns:
+        _type_: 过滤后的检测结果
+    """
+    r.boxes=[x for x in  r.boxes if r.names[int(x.cls)]=="person"]
+    return r
+
 def frame_reader():
     global video_stream_start_timestamp
     cap = cv2.VideoCapture(rtmp_url)
@@ -110,7 +123,7 @@ def frame_reader():
 
         # 获取时间戳，单位为毫秒，将其转换为秒
         tmp_timestamp = cap.get(cv2.CAP_PROP_POS_MSEC)
-        print(f"timestamp from video stream:{str(tmp_timestamp)},video_stream_strap_timestamp:{str(video_stream_start_timestamp)} ,added timestamp:{str(tmp_timestamp+video_stream_start_timestamp)}")
+        # print(f"timestamp from video stream:{str(tmp_timestamp)},video_stream_strap_timestamp:{str(video_stream_start_timestamp)} ,added timestamp:{str(tmp_timestamp+video_stream_start_timestamp)}")
         timestamp_ms = tmp_timestamp+video_stream_start_timestamp*1000
         # timestamp = timestamp_ms / 1000
 
@@ -134,6 +147,7 @@ def generate_frames():
         frame_process_start_time = time.time()
 
         results = model.track(frame, persist=True)
+        filter_class(results[0])
         annotated_frame = results[0].plot()
 
         frame_process_end_time = time.time()
