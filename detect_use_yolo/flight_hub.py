@@ -78,7 +78,7 @@ def flight_hub_livestream_5_min():
     start_message  = start_rtmp_stream("1581F6Q8D243N00CPVGL","81-0-0","cxtest")
     start_msg = json.loads(start_message)
     print(start_msg)
-    time.sleep(60*5)
+    time.sleep(60)
     if start_msg['message']=='OK':
         print(stop_rtmp_stream(start_msg['data']['data']['converter_id']))
         print(f"{start_msg['data']['data']['converter_id']} stoped")

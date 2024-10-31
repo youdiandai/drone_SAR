@@ -13,6 +13,7 @@ def on_message(client, userdata, message):
     try:
         payload_json = message.payload.decode('utf-8')
         payload_data = json.loads(payload_json)
+        print(payload_data)
         with message_lock:  # 保护对变量的写入
             latest_mqtt_message = payload_data
         # print(f"Updated latest_mqtt_message: {latest_mqtt_message}")  # 调试输出
@@ -29,7 +30,7 @@ def get_drone_address(client, userdata, message):
                 # print(payload_data)
                 lon,lat = payload_data["data"]['host']['longitude'],payload_data["data"]['host']['latitude']
                 lon,lat = wgs84_to_gcj02(lon,lat)
-                latest_mqtt_message = {"latitude":lat,"longitude":lon}
+                latest_mqtt_message = {"latitude":lat,"longitude":lon,'timestamp':payload_data['timestamp']}
             # print(f"Updated latest_mqtt_message: {latest_mqtt_message}")  # 调试输出
     except Exception as e:
         print(f"Error decoding JSON: {e}")
