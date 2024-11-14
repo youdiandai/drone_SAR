@@ -21,6 +21,17 @@ def get_project_list():
     response = requests.request("GET", url, headers=headers, data=payload)
     return response.text
 
+def get_stream_converters(sn,camera_num):
+    url = dji_url+f"/manage/api/v1.0/stream-converters?channel={sn}_{camera_num}"
+    payload={}
+    headers = {
+        'X-Organization-Key': f'{organization_key}',
+        'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+        'Content-Type': 'application/json'
+    }
+    response = requests.request("GET", url, headers=headers, data=payload)
+    return response.text
+
 def get_device_by_project_id(project_id):
     """获取项目下的设备列表
 
@@ -83,6 +94,14 @@ def flight_hub_livestream_5_min():
         print(stop_rtmp_stream(start_msg['data']['data']['converter_id']))
         print(f"{start_msg['data']['data']['converter_id']} stoped")
 
+def stop_all_live_streams_of_mt3():
+    data = json.loads(get_stream_converters("1581F6Q8D243N00CPVGL","81-0-0"))
+    for x in data['data']['members']:
+        print(x['converter_id'])
+        print(stop_rtmp_stream(x['converter_id']))
+
+
 if __name__ == '__main__':
     # print(json.loads(get_device_by_project_id("aad2f7cd-db27-4226-b2d7-8b4b36422df5")))
-    flight_hub_livestream_5_min()
+    # flight_hub_livestream_5_min()
+    stop_all_live_streams_of_mt3()
