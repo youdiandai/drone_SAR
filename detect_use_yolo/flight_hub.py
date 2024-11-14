@@ -97,7 +97,7 @@ def flight_hub_livestream_5_min():
 def stop_all_live_streams_of_mt3():
     data = json.loads(get_stream_converters("1581F6Q8D243N00CPVGL","81-0-0"))
     for x in data['data']['members']:
-        print(x['converter_id'])
+        print(f'stoping live stream :{x['converter_id']}')
         print(stop_rtmp_stream(x['converter_id']))
 
 

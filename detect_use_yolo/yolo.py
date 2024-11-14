@@ -7,7 +7,7 @@ import threading
 from collections import deque
 import mqtt_listen  # 直接导入模块
 from datetime import datetime, timezone, timedelta
-from flight_hub import start_rtmp_stream,stop_rtmp_stream
+from flight_hub import start_rtmp_stream,stop_rtmp_stream,stop_all_live_streams_of_mt3
 import sys
 import signal
 import json
@@ -38,9 +38,7 @@ def cleanup():
     """清理工作"""
     global start_msg
     print("Stopping RTMP stream...")
-    if start_msg['message']=='OK':
-        print(stop_rtmp_stream(start_msg['data']['data']['converter_id']))
-        print(f"{start_msg['data']['data']['converter_id']} stoped")
+    stop_all_live_streams_of_mt3()
     print("Cleanup complete, exiting program.")
 
 def signal_handler(sig, frame):
@@ -201,7 +199,7 @@ if __name__ == "__main__":
         print(f"start message :{start_msg}")
     
     try:
-        video_stream_start_timestamp = start_msg['data']['data']['create_ts']
+        video_stream_start_timestamp = start_msg['data']['create_ts']
         print(f"video stream start timestamp :{video_stream_start_timestamp},beijing time :{convert_to_beijing_time(video_stream_start_timestamp)}")
         
         mqtt_listener_thread = threading.Thread(target=mqtt_listen.subscribe_to_topic, args=(device_sn,))
@@ -215,7 +213,8 @@ if __name__ == "__main__":
 
         program_end_time = time.time()
         print(f"Program started in {program_end_time - program_start_time:.2f} seconds")
-    
+    except:
+        cleanup()
     finally:
         cleanup()
 
