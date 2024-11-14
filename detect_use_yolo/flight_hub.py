@@ -104,4 +104,4 @@ def stop_all_live_streams_of_mt3():
 if __name__ == '__main__':
     # print(json.loads(get_device_by_project_id("aad2f7cd-db27-4226-b2d7-8b4b36422df5")))
     # flight_hub_livestream_5_min()
-    stop_all_live_streams_of_mt3
+    stop_all_live_streams_of_mt3()
